@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #212121;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #574848;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>User Registration</h2>
+        <form id="registrationForm">
+            <div class="error" id="errorContainer"></div>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="fullname" placeholder="Full Name" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="file" id="avatar" accept="image/*" required>
+            <input type="file" id="coverImage" accept="image/*">
+            <input type="submit" value="Register">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("registrationForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const fullname = document.getElementById("fullname").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const avatar = document.getElementById("avatar").files[0];
+            const coverImage = document.getElementById("coverImage").files[0];
+
+            const formData = new FormData();
+            formData.append("username", username);
+            formData.append("email", email);
+            formData.append("fullname", fullname);
+            formData.append("password", password);
+            formData.append("avatar", avatar);
+            if (coverImage) {
+                formData.append("coverImage", coverImage);
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/api/v1/user/register", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert("User registered successfully");
+                    document.getElementById("registrationForm").reset();
+                } else {
+                    document.getElementById("errorContainer").innerText = data.Error || "Something went wrong";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("errorContainer").innerText = "Something went wrong";
+            }
+        });
+    </script>
+
+</body>
+
+</html>
