@@ -222,4 +222,36 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser };
+const logOutUser = asyncHandler(async (req, res) => {
+  try {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    const { refreshToken } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      { refreshToken: refreshToken },
+      { refreshToken: null }
+    );
+
+    if (user) {
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            { user: user.email },
+            "User logged out successfully"
+          )
+        );
+    }
+    return res.status(400).json({
+      Error: "User not found or token is not valid",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      Error: error,
+    });
+  }
+});
+export { registerUser, loginUser, logOutUser };
